@@ -444,6 +444,7 @@ Alternatively, consider using Matchers in the expect of the testAsyncNotifier ra
       provider: counterAsyncNotifierProvider(0),
       act: (notifier) => notifier.increment(),
       expect: () => contains(const AsyncData(1)),
+      // ignore: invalid_use_of_protected_member
       verify: (notifier) => state = notifier.state,
       tearDown: () {
         tearDownCallCount++;

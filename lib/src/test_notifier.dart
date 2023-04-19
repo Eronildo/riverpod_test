@@ -1,8 +1,13 @@
+// ignore_for_file: invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+
 import 'dart:async';
 
 import 'package:meta/meta.dart';
+import 'package:riverpod/riverpod.dart'
+    show Override, ProviderContainer;
+// ignore: implementation_imports
 import 'package:riverpod/src/internals.dart'
-    show NotifierBase, NotifierProviderBase, Override, ProviderContainer;
+    show NotifierBase, NotifierProviderBase;
 import 'package:riverpod_test/src/diff.dart';
 import 'package:test/test.dart' as test;
 
@@ -207,6 +212,7 @@ Future<void> notifierTest<C extends NotifierBase<State>, State>({
       // clear the states emitted by the build
       if (!emitBuildStates) states.clear();
       // applies seed in the state
+      // ignore: invalid_use_of_protected_member
       if (seed != null) notifier.state = seed;
       try {
         await act?.call(notifier);

@@ -185,6 +185,7 @@ Future<void> stateNotifierTest<C extends StateNotifier<State>, State>({
         final notifier = container.read(provider.notifier);
         if (!emitBuildStates) states.clear();
         // applies seed in the state
+        // ignore: invalid_use_of_protected_member
         if (seed != null) notifier.state = seed;
         await act?.call(notifier);
       } catch (error) {

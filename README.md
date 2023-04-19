@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://pub.dev/packages/riverpod_test"><img src="https://img.shields.io/pub/v/riverpod_test.svg&color=blue" alt="Pub"></a>
+<a href="https://pub.dev/packages/riverpod_test"><img src="https://img.shields.io/pub/v/riverpod_test.svg?color=blue" alt="Pub"></a>
 <a href="https://github.com/Eronildo/riverpod_test"><img src="https://img.shields.io/github/stars/Eronildo/riverpod_test.svg?style=flat&logo=github&colorB=blue&label=stars" alt="Star on Github"></a>
 <a href="https://docs.flutter.dev/development/data-and-backend/state-mgmt/options#riverpod"><img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
@@ -10,7 +10,7 @@
 
 ## Package
 
-Package is a port of `felangel`'s `bloc_test`, modified to work with Riverpod Providers.
+Package is a port of `felangel`'s `bloc_test`, modified to work with Riverpod Providers.\
 Increase code coverage by testing all riverpod providers.
 
 ## Installation
@@ -63,7 +63,7 @@ class CounterNotifier extends Notifier<int> {
 
 ```
 
-`testAsyncNotifier`.
+`testAsyncNotifier`
 
 ```dart
 testAsyncNotifier<CounterAsyncNotifier, int>(

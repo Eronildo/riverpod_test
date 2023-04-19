@@ -1,6 +1,6 @@
 name: riverpod_test
 description: A testing library which makes it easy to test providers. Built to be used with the riverpod package.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/Eronildo/riverpod_test
 
 environment:
@@ -13,9 +13,8 @@ dependencies:
   test: ^1.22.0
 
 dev_dependencies:
-  dart_code_metrics: ^5.7.2
+  lints: ^2.0.1
   mocktail: ^0.3.0
-  very_good_analysis: ^4.0.0+1
 
 screenshots:
   - description: The riverpod test package logo.

@@ -1,20 +1,20 @@
+// ignore_for_file: invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/src/internals.dart'
-    show
-        AsyncNotifierBase,
-        AsyncNotifierProviderBase,
-        AsyncValue,
-        Override,
-        ProviderContainer;
+import 'package:riverpod/riverpod.dart'
+    show AsyncValue, Override, ProviderContainer;
+// ignore: implementation_imports
+import 'package:riverpod/src/async_notifier.dart'
+    show AsyncNotifierBase, AsyncNotifierProviderBase;
 import 'package:riverpod_test/src/diff.dart';
 import 'package:test/test.dart' as test;
 
 /// Creates a new `AsyncNotifier` test case with the given [description].
-/// [testAsyncNotifier] will handle asserting that the `notifier` emits the 
+/// [testAsyncNotifier] will handle asserting that the `notifier` emits the
 /// [expect]ed states (in order) after [act] is executed.
-/// [testAsyncNotifier] also handles ensuring that no additional states are 
+/// [testAsyncNotifier] also handles ensuring that no additional states are
 /// emitted by closing the [provider] before evaluating the [expect]ation.
 ///
 /// [setUp] is optional and should be used to set up
@@ -23,13 +23,13 @@ import 'package:test/test.dart' as test;
 /// For common set up code, prefer to use `setUp` from `package:test/test.dart`.
 ///
 /// [provider] should construct and return the `notifier` under test.
-/// 
+///
 /// [overrides] list of [Override] to override providers behavior.
 ///
 /// [seed] is an optional `Function` that returns a state
 /// which will be used to seed the `notifier` before [act] is called.
 ///
-/// [act] is an optional callback which will be invoked with the `notifier` 
+/// [act] is an optional callback which will be invoked with the `notifier`
 /// under test and should be used to interact with the `notifier`.
 ///
 /// [skip] is an optional `int` which can be used to skip any number of states.
@@ -38,14 +38,14 @@ import 'package:test/test.dart' as test;
 /// [wait] is an optional `Duration` which can be used to wait for
 /// async operations within the `notifier` under test such as `debounce`.
 ///
-/// [expect] is an optional `Function` that returns a `Matcher` which the 
+/// [expect] is an optional `Function` that returns a `Matcher` which the
 /// `notifier` under test is expected to emit after [act] is executed.
 ///
 /// [verify] is an optional callback which is invoked after [expect]
 /// and can be used for additional verification/assertions.
 /// [verify] is called with the `notifier` returned by [provider].
 ///
-/// [errors] is an optional `Function` that returns a `Matcher` which the 
+/// [errors] is an optional `Function` that returns a `Matcher` which the
 /// `notifier` under test is expected to throw after [act] is executed.
 ///
 /// [tearDown] is optional and can be used to
@@ -74,7 +74,7 @@ import 'package:test/test.dart' as test;
 /// );
 /// ```
 ///
-/// [testAsyncNotifier] can also be used to [overrides] to override 
+/// [testAsyncNotifier] can also be used to [overrides] to override
 /// providers behavior.
 ///
 /// ```dart
@@ -131,8 +131,8 @@ import 'package:test/test.dart' as test;
 /// );
 /// ```
 ///
-/// **Note:** when using [testAsyncNotifier] with state classes which don't 
-/// override `==` and `hashCode` you can provide an `Iterable` of matchers 
+/// **Note:** when using [testAsyncNotifier] with state classes which don't
+/// override `==` and `hashCode` you can provide an `Iterable` of matchers
 /// instead of explicit state instances.
 ///
 /// ```dart
@@ -213,6 +213,7 @@ Future<void> asyncNotifierTest<C extends AsyncNotifierBase<State>, State>({
       // clear the states emitted by the build
       if (!emitBuildStates) states.clear();
       // applies seed in the state
+      // ignore: invalid_use_of_protected_member
       if (seed != null) notifier.state = seed;
       try {
         await act?.call(notifier);
