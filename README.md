@@ -15,11 +15,16 @@ Increase code coverage by testing all riverpod providers.
 
 ## Installation
 
-Add to dev dependencies inside pubspec_yaml:
+For a Flutter project:
 
-```yaml
-dev_dependencies:
-  riverpod_test: [version]
+```console
+flutter pub add --dev riverpod_test
+```
+
+For a Dart project:
+
+```console
+dart pub add --dev riverpod_test
 ```
 
 ## Usage

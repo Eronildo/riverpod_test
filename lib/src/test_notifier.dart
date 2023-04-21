@@ -3,8 +3,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart'
-    show Override, ProviderContainer;
+import 'package:riverpod/riverpod.dart' show Override, ProviderContainer;
 // ignore: implementation_imports
 import 'package:riverpod/src/internals.dart'
     show NotifierBase, NotifierProviderBase;
@@ -12,9 +11,9 @@ import 'package:riverpod_test/src/diff.dart';
 import 'package:test/test.dart' as test;
 
 /// Creates a new `Notifier` test case with the given [description].
-/// [testNotifier] will handle asserting that the `notifier` emits the 
+/// [testNotifier] will handle asserting that the `notifier` emits the
 /// [expect]ed states (in order) after [act] is executed.
-/// [testNotifier] also handles ensuring that no additional states are 
+/// [testNotifier] also handles ensuring that no additional states are
 /// emitted by closing the [provider] before evaluating the [expect]ation.
 ///
 /// [setUp] is optional and should be used to set up
@@ -29,7 +28,7 @@ import 'package:test/test.dart' as test;
 /// [seed] is an optional `Function` that returns a state
 /// which will be used to seed the `notifier` before [act] is called.
 ///
-/// [act] is an optional callback which will be invoked with the `notifier` 
+/// [act] is an optional callback which will be invoked with the `notifier`
 /// under test and should be used to interact with the `notifier`.
 ///
 /// [skip] is an optional `int` which can be used to skip any number of states.
@@ -38,14 +37,14 @@ import 'package:test/test.dart' as test;
 /// [wait] is an optional `Duration` which can be used to wait for
 /// async operations within the `notifier` under test such as `debounce`.
 ///
-/// [expect] is an optional `Function` that returns a `Matcher` which the 
+/// [expect] is an optional `Function` that returns a `Matcher` which the
 /// `notifier` under test is expected to emit after [act] is executed.
 ///
 /// [verify] is an optional callback which is invoked after [expect]
 /// and can be used for additional verification/assertions.
 /// [verify] is called with the `notifier` returned by [provider].
 ///
-/// [errors] is an optional `Function` that returns a `Matcher` which the 
+/// [errors] is an optional `Function` that returns a `Matcher` which the
 /// `notifier` under test is expected to throw after [act] is executed.
 ///
 /// [tearDown] is optional and can be used to
@@ -74,7 +73,7 @@ import 'package:test/test.dart' as test;
 /// );
 /// ```
 ///
-/// [testNotifier] can also be used to [overrides] to override 
+/// [testNotifier] can also be used to [overrides] to override
 /// providers behavior.
 ///
 /// ```dart
@@ -131,8 +130,8 @@ import 'package:test/test.dart' as test;
 /// );
 /// ```
 ///
-/// **Note:** when using [testNotifier] with state classes which don't 
-/// override `==` and `hashCode` you can provide an `Iterable` of matchers 
+/// **Note:** when using [testNotifier] with state classes which don't
+/// override `==` and `hashCode` you can provide an `Iterable` of matchers
 /// instead of explicit state instances.
 ///
 /// ```dart

@@ -7,7 +7,7 @@ import 'package:riverpod_test/src/diff.dart';
 import 'package:test/test.dart' as test;
 
 /// Creates a new `Provider` test case with the given [description].
-/// [testProvider] will handle asserting that the `provider` emits the 
+/// [testProvider] will handle asserting that the `provider` emits the
 /// [expect]ed after [provider] is read.
 ///
 /// [setUp] is optional and should be used to set up
@@ -16,19 +16,19 @@ import 'package:test/test.dart' as test;
 /// For common set up code, prefer to use `setUp` from `package:test/test.dart`.
 ///
 /// [provider] should construct and return the `provider result` under test.
-/// 
+///
 /// [overrides] list of [Override] to override providers behavior.
 ///
 /// [wait] is an optional `Duration` which can be used to wait for
 /// async operations within the `notifier` under test such as `debounce`.
 ///
-/// [expect] is an optional `Function` that returns a `Matcher` which the 
+/// [expect] is an optional `Function` that returns a `Matcher` which the
 /// `provider` under test is expected.
 ///
 /// [verify] is an optional callback which is invoked after [expect]
 /// and can be used for additional verification/assertions.
 ///
-/// [errors] is an optional `Function` that returns a `Matcher` which the 
+/// [errors] is an optional `Function` that returns a `Matcher` which the
 /// `provider` under test is expected to throw.
 ///
 /// [tearDown] is optional and can be used to
@@ -44,9 +44,9 @@ import 'package:test/test.dart' as test;
 /// );
 /// ```
 ///
-/// [testProvider] can also be used to [overrides] to override 
+/// [testProvider] can also be used to [overrides] to override
 /// providers behavior.
-/// 
+///
 /// ```dart
 /// testProvider(
 ///   'expect [10] when mockRepository increment return 10',
@@ -81,8 +81,8 @@ import 'package:test/test.dart' as test;
 /// );
 /// ```
 ///
-/// **Note:** when using [testProvider] with state classes which don't 
-/// override `==` and `hashCode` you can provide an `Iterable` of matchers 
+/// **Note:** when using [testProvider] with state classes which don't
+/// override `==` and `hashCode` you can provide an `Iterable` of matchers
 /// instead of explicit state instances.
 ///
 /// ```dart
