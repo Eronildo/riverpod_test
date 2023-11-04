@@ -209,6 +209,7 @@ Future<void> asyncNotifierTest<C extends AsyncNotifierBase<State>, State>({
         fireImmediately: true,
       );
       final notifier = container.read(provider.notifier);
+      // ignore: invalid_use_of_protected_member
       await notifier.future;
       // clear the states emitted by the build
       if (!emitBuildStates) states.clear();

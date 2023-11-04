@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Upgraded packages versions and fixed example.
+
 ## 0.1.3
 
 * Downgraded Test and Meta Packages.

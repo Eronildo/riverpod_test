@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_test/riverpod_test.dart';
@@ -23,7 +25,7 @@ void mainProvider() {
 
   group('counterRepositoryProvider', () {
     final mockRepository = MockRepository();
-    
+
     testProvider<int>(
       'expect [5] from repository',
       overrides: [repositoryProvider.overrideWithValue(mockRepository)],
@@ -64,12 +66,12 @@ void mainResultProvider() {
 
 void mainStateNotifier() {
   testStateNotifier(
-    'expect [2] when increment is called twice',
+    'expect [1, 2] when increment is called twice',
     provider: counterStateNotifierProvider,
     act: (notifier) => notifier
       ..increment()
       ..increment(),
-    expect: () => [2],
+    expect: () => [1, 2],
   );
 }
 
@@ -100,9 +102,9 @@ class CounterNotifier extends Notifier<int> {
 
 class CounterAsyncNotifier extends AsyncNotifier<int> {
   @override
-  int build() => 0;
+  FutureOr<int> build() => 0;
 
-  void increment() => AsyncData(state.value! + 1);
+  void increment() => state = AsyncData(state.value! + 1);
 }
 
 class Repository {
