@@ -1,3 +1,7 @@
+## 0.1.5
+
+* Upgraded packages versions and fixed AsyncData with list equality.
+
 ## 0.1.4
 
 * Upgraded packages versions and fixed example.

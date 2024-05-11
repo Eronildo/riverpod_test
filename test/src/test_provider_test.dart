@@ -80,6 +80,19 @@ void main() {
         tearDown: overrides.clear,
       );
 
+      testProvider<AsyncValue<List<int>>>(
+        'expect [AsyncLoading(), AsyncData([])]',
+        provider: futureListProvider,
+        overrides: overrides,
+        setUp: () =>
+            when(mockRepository.fetchCounterList).thenAnswer((_) async => []),
+        expect: () => <AsyncValue<List<int>>>[
+          const AsyncLoading(),
+          const AsyncData([]),
+        ],
+        tearDown: overrides.clear,
+      );
+
       testProvider<AsyncValue<int>>(
         'excpect [AsyncLoading(), AsyncData(10)]',
         provider: familyFutureProvider(10),

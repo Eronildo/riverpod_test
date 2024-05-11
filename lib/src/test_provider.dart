@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart'
     show Override, ProviderBase, ProviderContainer;
+import 'package:riverpod_test/src/async_list_equals.dart';
 import 'package:riverpod_test/src/diff.dart';
 import 'package:test/test.dart' as test;
 
@@ -160,7 +161,13 @@ Future<void> providerTest<State>({
         final dynamic expected = expect();
         shallowEquality = '$states' == '$expected';
         try {
-          test.expect(states, test.wrapMatcher(expected));
+          final isAsyncListEquals =
+              isAsyncDataListEquals(provider, states, expected);
+          if (isAsyncListEquals) {
+            test.expect(isAsyncListEquals, true);
+          } else {
+            test.expect(states, test.wrapMatcher(expected));
+          }
         } on test.TestFailure catch (e) {
           if (shallowEquality || expected is! List<State>) rethrow;
           final diff = testDiff(expected: expected, actual: states);

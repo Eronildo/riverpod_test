@@ -19,6 +19,12 @@ class ComplexRepository {
     return dataSource.counter;
   }
 
+  Future<List<int>> fetchCounterList() async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    return [2];
+  }
+
   Future<int> incrementCounter() => dataSource.incrementCounter();
 
   Future<int> decrementCounter() => dataSource.decrementCounter();

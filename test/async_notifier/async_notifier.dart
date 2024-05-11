@@ -2,6 +2,7 @@ export 'async_counter_async_notifier.dart';
 export 'async_notifier_int_value_extension.dart';
 export 'complex_async_notifier.dart';
 export 'counter_async_notifier.dart';
+export 'list_async_notifier.dart';
 export 'debounce_counter_notifier.dart';
 export 'error_count_notifier.dart';
 export 'exception_async_notifier.dart';

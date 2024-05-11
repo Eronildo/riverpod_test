@@ -200,6 +200,13 @@ void main() {
         expect: () => const <AsyncValue<int>>[AsyncData(1)],
       );
 
+      testAsyncNotifier<ListAsyncNotifier, List<int>>(
+        'expect [AsyncData([])] when getFromRepository is called',
+        provider: listAsyncNotifierProvider,
+        act: (notifier) => notifier.getFromRepository(),
+        expect: () => const <AsyncValue<List<int>>>[AsyncData([])],
+      );
+
       testAsyncNotifier<AsyncCounterAsyncNotifier, int>(
         'expect [AsyncData(1), AsyncData(2)] when increment is called multiple '
         'times with async act',
