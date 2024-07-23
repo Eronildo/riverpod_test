@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart'
-    show Override, ProviderBase, ProviderContainer;
+import 'package:riverpod/riverpod.dart' show Override, ProviderBase, ProviderContainer;
 import 'package:riverpod_test/src/diff.dart';
+import 'package:riverpod_test/src/run_zoned_wrapper.dart';
 import 'package:test/test.dart' as test;
 
 /// Creates a new `Result Provider` test case with the given [description].
@@ -128,49 +128,50 @@ Future<void> resultProviderTest<Result>({
 }) async {
   final unhandledErrors = <Object>[];
   var shallowEquality = false;
-
-  await runZonedGuarded(
-    () async {
-      await setUp?.call();
-      final container = ProviderContainer(overrides: overrides);
-      final result = container.read<Result>(provider);
-      final values = <dynamic>[];
-      try {
-        final value = await act?.call(result);
-        values.add(value);
-      } catch (error) {
-        if (errors == null) rethrow;
-        unhandledErrors.add(error);
-      }
-      await Future<void>.delayed(Duration.zero);
-      container.dispose();
-      if (expect != null) {
-        final dynamic expected = expect();
-        shallowEquality = '$values' == '$expected';
+  try {
+    await runZonedGuardedWrapper(
+      () async {
+        await setUp?.call();
+        final container = ProviderContainer(overrides: overrides);
+        final result = container.read<Result>(provider);
+        final values = <dynamic>[];
         try {
-          test.expect(values, test.wrapMatcher(expected));
-        } on test.TestFailure catch (e) {
-          if (shallowEquality || expected is! List<Object>) rethrow;
-          final diff = testDiff(expected: expected, actual: values);
-          final message = '${e.message}\n$diff';
-          throw test.TestFailure(message);
+          final value = await act?.call(result);
+          values.add(value);
+        } catch (error) {
+          if (errors == null) rethrow;
+          unhandledErrors.add(error);
         }
-      }
-      await verify?.call(result);
-      await tearDown?.call(result);
-    },
-    (error, stack) {
-      if (shallowEquality && error is test.TestFailure) {
-        throw test.TestFailure(
-          '''${error.message}
+        await Future<void>.delayed(Duration.zero);
+        container.dispose();
+        if (expect != null) {
+          final dynamic expected = expect();
+          shallowEquality = '$values' == '$expected';
+          try {
+            test.expect(values, test.wrapMatcher(expected));
+          } on test.TestFailure catch (e) {
+            if (shallowEquality || expected is! List<Object>) rethrow;
+            final diff = testDiff(expected: expected, actual: values);
+            final message = '${e.message}\n$diff';
+            throw test.TestFailure(message);
+          }
+        }
+        await verify?.call(result);
+        await tearDown?.call(result);
+      },
+    );
+  } catch (error) {
+    if (shallowEquality && error is test.TestFailure) {
+      throw test.TestFailure(
+        '''${error.message}
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testResultProvider rather than concrete state instances.\n''',
-        );
-      }
-      if (errors == null || !unhandledErrors.contains(error)) {
-        throw error;
-      }
-    },
-  );
+      );
+    }
+    if (errors == null || !unhandledErrors.contains(error)) {
+      throw error;
+    }
+  }
+
   if (errors != null) test.expect(unhandledErrors, test.wrapMatcher(errors()));
 }

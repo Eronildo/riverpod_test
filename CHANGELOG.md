@@ -1,3 +1,7 @@
+## 0.1.6
+
+* Fix Waiting for test indefinitely if it fails
+
 ## 0.1.5
 
 * Upgraded packages versions and fixed AsyncData with list equality.

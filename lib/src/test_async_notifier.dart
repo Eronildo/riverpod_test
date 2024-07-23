@@ -3,13 +3,12 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart'
-    show AsyncValue, Override, ProviderContainer;
+import 'package:riverpod/riverpod.dart' show AsyncValue, Override, ProviderContainer;
 // ignore: implementation_imports
-import 'package:riverpod/src/async_notifier.dart'
-    show AsyncNotifierBase, AsyncNotifierProviderBase;
+import 'package:riverpod/src/async_notifier.dart' show AsyncNotifierBase, AsyncNotifierProviderBase;
 import 'package:riverpod_test/src/async_list_equals.dart';
 import 'package:riverpod_test/src/diff.dart';
+import 'package:riverpod_test/src/run_zoned_wrapper.dart';
 import 'package:test/test.dart' as test;
 
 /// Creates a new `AsyncNotifier` test case with the given [description].
@@ -199,71 +198,72 @@ Future<void> asyncNotifierTest<C extends AsyncNotifierBase<State>, State>({
   final unhandledErrors = <Object>[];
   var shallowEquality = false;
 
-  await runZonedGuarded(
-    () async {
-      await setUp?.call();
-      final container = ProviderContainer(overrides: overrides);
-      final states = <AsyncValue<State>>[];
-      container.listen<AsyncValue<State>>(
-        provider,
-        (previous, next) => states.add(next),
-        fireImmediately: true,
-      );
-      final notifier = container.read(provider.notifier);
-      // ignore: invalid_use_of_protected_member
-      await notifier.future;
-      // clear the states emitted by the build
-      if (!emitBuildStates) states.clear();
-      // applies seed in the state
-      // ignore: invalid_use_of_protected_member
-      if (seed != null) notifier.state = seed;
-      try {
-        await act?.call(notifier);
-      } catch (error) {
-        if (errors == null) rethrow;
-        unhandledErrors.add(error);
-      }
-      if (wait != null) await Future<void>.delayed(wait);
-      await Future<void>.delayed(Duration.zero);
-      container.dispose();
-      if (expect != null) {
-        if (skip < 0) skip = 0;
-        if (skip > states.length) skip = states.length;
-        states.removeRange(0, skip);
-        final dynamic expected = expect();
-        // remove state return by seed
-        if (seed != null && states.isNotEmpty) states.remove(seed);
-        shallowEquality = '$states' == '$expected';
+  try {
+    await runZonedGuardedWrapper(
+      () async {
+        await setUp?.call();
+        final container = ProviderContainer(overrides: overrides);
+        final states = <AsyncValue<State>>[];
+        container.listen<AsyncValue<State>>(
+          provider,
+          (previous, next) => states.add(next),
+          fireImmediately: true,
+        );
+        final notifier = container.read(provider.notifier);
+        // ignore: invalid_use_of_protected_member
+        await notifier.future;
+        // clear the states emitted by the build
+        if (!emitBuildStates) states.clear();
+        // applies seed in the state
+        // ignore: invalid_use_of_protected_member
+        if (seed != null) notifier.state = seed;
         try {
-          final isAsyncListEquals =
-              isAsyncDataListEquals(provider, states, expected);
-          if (isAsyncListEquals) {
-            test.expect(isAsyncListEquals, true);
-          } else {
-            test.expect(states, test.wrapMatcher(expected));
-          }
-        } on test.TestFailure catch (e) {
-          if (shallowEquality || expected is! List<AsyncValue<State>>) rethrow;
-          final diff = testDiff(expected: expected, actual: states);
-          final message = '${e.message}\n$diff';
-          throw test.TestFailure(message);
+          await act?.call(notifier);
+        } catch (error) {
+          if (errors == null) rethrow;
+          unhandledErrors.add(error);
         }
-      }
-      await verify?.call(notifier);
-      await tearDown?.call();
-    },
-    (error, stack) {
-      if (shallowEquality && error is test.TestFailure) {
-        throw test.TestFailure(
-          '''${error.message}
+        if (wait != null) await Future<void>.delayed(wait);
+        await Future<void>.delayed(Duration.zero);
+        container.dispose();
+        if (expect != null) {
+          if (skip < 0) skip = 0;
+          if (skip > states.length) skip = states.length;
+          states.removeRange(0, skip);
+          final dynamic expected = expect();
+          // remove state return by seed
+          if (seed != null && states.isNotEmpty) states.remove(seed);
+          shallowEquality = '$states' == '$expected';
+          try {
+            final isAsyncListEquals = isAsyncDataListEquals(provider, states, expected);
+            if (isAsyncListEquals) {
+              test.expect(isAsyncListEquals, true);
+            } else {
+              test.expect(states, test.wrapMatcher(expected));
+            }
+          } on test.TestFailure catch (e) {
+            if (shallowEquality || expected is! List<AsyncValue<State>>) rethrow;
+            final diff = testDiff(expected: expected, actual: states);
+            final message = '${e.message}\n$diff';
+            throw test.TestFailure(message);
+          }
+        }
+        await verify?.call(notifier);
+        await tearDown?.call();
+      },
+    );
+  } catch (error) {
+    if (shallowEquality && error is test.TestFailure) {
+      throw test.TestFailure(
+        '''${error.message}
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testAsyncNotifier rather than concrete state instances.\n''',
-        );
-      }
-      if (errors == null || !unhandledErrors.contains(error)) {
-        throw error;
-      }
-    },
-  );
+      );
+    }
+    if (errors == null || !unhandledErrors.contains(error)) {
+      throw error;
+    }
+  }
+
   if (errors != null) test.expect(unhandledErrors, test.wrapMatcher(errors()));
 }

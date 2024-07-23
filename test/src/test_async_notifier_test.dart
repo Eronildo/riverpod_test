@@ -101,8 +101,7 @@ void main() {
       );
 
       test('fails immediately when expectation is incorrect', () async {
-        const expectedError =
-            'Expected: [AsyncData<int>:AsyncData<int>(value: 2)]\n'
+        const expectedError = 'Expected: [AsyncData<int>:AsyncData<int>(value: 2)]\n'
             '  Actual: [AsyncData<int>:AsyncData<int>(value: 1)]\n'
             '   Which: at location [0] is '
             'AsyncData<int>:<AsyncData<int>(value: 1)> instead of '
@@ -114,75 +113,46 @@ void main() {
             '\x1B[0m\x1B[31m[-2-]\x1B[0m\x1B[32m{+1+}\x1B[0m\x1B[90m)]\x1B[0m\n'
             '\n'
             '==== end diff ====================================\n';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              asyncNotifierTest<CounterAsyncNotifier, int>(
-                provider: counterAsyncNotifierProvider(0),
-                act: (notifier) => notifier.increment(),
-                expect: () => <AsyncValue<int>>[const AsyncData<int>(2)],
-                errors: Exception.new,
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        try {
+          await asyncNotifierTest<CounterAsyncNotifier, int>(
+            provider: counterAsyncNotifierProvider(0),
+            act: (notifier) => notifier.increment(),
+            expect: () => <AsyncValue<int>>[const AsyncData<int>(2)],
+            errors: Exception.new,
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
 
       test(
         'fails immediately when '
         'uncaught exception occurs within notifier',
         () async {
-          late Object actualError;
-          final completer = Completer<void>();
-          await runZonedGuarded(
-            () async {
-              unawaited(
-                asyncNotifierTest<ErrorCountAsyncNotifier, int>(
-                  provider: errorCountAsyncNotifierProvider,
-                  act: (notifier) => notifier.increment(),
-                  expect: () => <AsyncValue<int>>[const AsyncData<int>(1)],
-                ).then((_) => completer.complete()),
-              );
-              await completer.future;
-            },
-            (Object error, _) {
-              actualError = error;
-              if (!completer.isCompleted) completer.complete();
-            },
-          );
-          expect(actualError, isA<ErrorCounterNotifierError>());
+          try {
+            await asyncNotifierTest<ErrorCountAsyncNotifier, int>(
+              provider: errorCountAsyncNotifierProvider,
+              act: (notifier) => notifier.increment(),
+              expect: () => <AsyncValue<int>>[const AsyncData<int>(1)],
+            );
+          } catch (e) {
+            expect(e, isA<ErrorCounterNotifierError>());
+          }
         },
       );
 
       test('fails immediately when exception occurs in act', () async {
         final exception = Exception('oops');
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              asyncNotifierTest<ErrorCountAsyncNotifier, int>(
-                provider: errorCountAsyncNotifierProvider,
-                act: (_) => throw exception,
-                expect: () => [const AsyncData<int>(1)],
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect(actualError, exception);
+
+        try {
+          await asyncNotifierTest<ErrorCountAsyncNotifier, int>(
+            provider: errorCountAsyncNotifierProvider,
+            act: (_) => throw exception,
+            expect: () => [const AsyncData<int>(1)],
+          );
+        } catch (e) {
+          expect(e, equals(exception));
+        }
       });
     });
 
@@ -377,29 +347,18 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError =
-            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              asyncNotifierTest<SideEffectAsyncNotifier, int>(
-                provider: sideEffectAsyncNotifierProvider(1),
-                overrides: overrides,
-                act: (notifier) => notifier.increment(),
-                verify: (_) => verify(repository.sideEffect).called(2),
-                tearDown: overrides.clear,
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        try {
+          await asyncNotifierTest<SideEffectAsyncNotifier, int>(
+            provider: sideEffectAsyncNotifierProvider(1),
+            overrides: overrides,
+            act: (notifier) => notifier.increment(),
+            verify: (_) => verify(repository.sideEffect).called(2),
+            tearDown: overrides.clear,
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
 
       test('shows equality warning when strings are identical', () async {
@@ -409,27 +368,18 @@ void main() {
    Which: at location [0] is AsyncData<ComplexState>:<AsyncData<ComplexState>(value: Instance of 'ComplexStateA')> instead of AsyncData<ComplexState>:<AsyncData<ComplexState>(value: Instance of 'ComplexStateA')>\n
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testAsyncNotifier rather than concrete state instances.\n''';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              asyncNotifierTest<ComplexAsyncNotifier, ComplexState>(
-                provider: complexAsyncNotifierProvider,
-                act: (notifier) => notifier.setComplexStateA(),
-                expect: () => <AsyncValue<ComplexState>>[
-                  AsyncData(ComplexStateA()),
-                ],
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+
+        try {
+          await asyncNotifierTest<ComplexAsyncNotifier, ComplexState>(
+            provider: complexAsyncNotifierProvider,
+            act: (notifier) => notifier.setComplexStateA(),
+            expect: () => <AsyncValue<ComplexState>>[
+              AsyncData(ComplexStateA()),
+            ],
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
     });
   });

@@ -49,75 +49,46 @@ void main() {
             '\x1B[90m[\x1B[0m\x1B[31m[-2-]\x1B[0m\x1B[32m{+1+}\x1B[0m\x1B[90m]\x1B[0m\n'
             '\n'
             '==== end diff ====================================\n';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              resultProviderTest<Repository>(
-                provider: repositoryProvider,
-                act: (result) => result.incrementCounter(),
-                expect: () => <int>[2],
-                errors: Exception.new,
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        try {
+          await resultProviderTest<Repository>(
+            provider: repositoryProvider,
+            act: (result) => result.incrementCounter(),
+            expect: () => <int>[2],
+            errors: Exception.new,
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
 
       test(
         'fails immediately when '
         'uncaught exception occurs within notifier',
         () async {
-          late Object actualError;
-          final completer = Completer<void>();
-          await runZonedGuarded(
-            () async {
-              unawaited(
-                resultProviderTest<Repository>(
-                  provider: repositoryProvider,
-                  act: (result) => result.throwError(),
-                  expect: () => <int>[1],
-                ).then((_) => completer.complete()),
-              );
-              await completer.future;
-            },
-            (Object error, _) {
-              actualError = error;
-              if (!completer.isCompleted) completer.complete();
-            },
-          );
-          expect(actualError, isA<RepositoryError>());
+          try {
+            await resultProviderTest<Repository>(
+              provider: repositoryProvider,
+              act: (result) => result.throwError(),
+              expect: () => <int>[1],
+            );
+          } catch (e) {
+            expect(e, isA<RepositoryError>());
+          }
         },
       );
 
       test('fails immediately when exception occurs in act', () async {
         final exception = Exception('oops');
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              resultProviderTest<Repository>(
-                provider: repositoryProvider,
-                act: (_) => throw exception,
-                expect: () => [1],
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect(actualError, exception);
+
+        try {
+          await resultProviderTest<Repository>(
+            provider: repositoryProvider,
+            act: (_) => throw exception,
+            expect: () => [1],
+          );
+        } catch (e) {
+          expect(e, equals(exception));
+        }
       });
     });
 
@@ -142,8 +113,7 @@ void main() {
         'expect [10] when incrementCounter is called',
         provider: complexRepositoryProvider,
         overrides: overrides,
-        setUp: () =>
-            when(mockDataSource.incrementCounter).thenAnswer((_) async => 10),
+        setUp: () => when(mockDataSource.incrementCounter).thenAnswer((_) async => 10),
         act: (result) => result.incrementCounter(),
         expect: () => [10],
         tearDown: (_) => overrides.clear(),
@@ -166,32 +136,19 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError =
-            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              resultProviderTest<ComplexRepository>(
-                provider: complexRepositoryProvider,
-                overrides: overrides,
-                setUp: () => when(mockDataSource.incrementCounter)
-                    .thenAnswer((_) async => 10),
-                act: (result) => result.incrementCounter(),
-                verify: (_) =>
-                    verify(mockDataSource.incrementCounter).called(2),
-                tearDown: (_) => overrides.clear(),
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        try {
+          await resultProviderTest<ComplexRepository>(
+            provider: complexRepositoryProvider,
+            overrides: overrides,
+            setUp: () => when(mockDataSource.incrementCounter).thenAnswer((_) async => 10),
+            act: (result) => result.incrementCounter(),
+            verify: (_) => verify(mockDataSource.incrementCounter).called(2),
+            tearDown: (_) => overrides.clear(),
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
 
       test('shows equality warning when strings are identical', () async {
@@ -200,25 +157,15 @@ void main() {
    Which: at location [0] is <Instance of 'ComplexA'> instead of <Instance of 'ComplexA'>\n
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testResultProvider rather than concrete state instances.\n''';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              resultProviderTest<Repository>(
-                provider: repositoryProvider,
-                act: (result) => result.getComplexA(),
-                expect: () => <Complex>[ComplexA()],
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        try {
+          await resultProviderTest<Repository>(
+            provider: repositoryProvider,
+            act: (result) => result.getComplexA(),
+            expect: () => <Complex>[ComplexA()],
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
     });
 
