@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_test/riverpod_test.dart';
@@ -34,25 +32,15 @@ void main() {
             '\x1B[90m[\x1B[0m\x1B[31m[-1-]\x1B[0m\x1B[32m{+0+}\x1B[0m\x1B[90m]\x1B[0m\n'
             '\n'
             '==== end diff ====================================\n';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              providerTest<int>(
-                provider: counterProvider,
-                expect: () => <int>[1],
-                errors: Exception.new,
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        try {
+          await providerTest<int>(
+            provider: counterProvider,
+            expect: () => <int>[1],
+            errors: Exception.new,
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
     });
 
@@ -71,8 +59,7 @@ void main() {
         'expect [AsyncLoading(), AsyncData(1)]',
         provider: futureProvider,
         overrides: overrides,
-        setUp: () =>
-            when(mockRepository.fetchCounter).thenAnswer((_) async => 1),
+        setUp: () => when(mockRepository.fetchCounter).thenAnswer((_) async => 1),
         expect: () => <AsyncValue<int>>[
           const AsyncLoading(),
           const AsyncData(1),
@@ -84,8 +71,7 @@ void main() {
         'expect [AsyncLoading(), AsyncData([])]',
         provider: futureListProvider,
         overrides: overrides,
-        setUp: () =>
-            when(mockRepository.fetchCounterList).thenAnswer((_) async => []),
+        setUp: () => when(mockRepository.fetchCounterList).thenAnswer((_) async => []),
         expect: () => <AsyncValue<List<int>>>[
           const AsyncLoading(),
           const AsyncData([]),
@@ -104,28 +90,17 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError =
-            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              providerTest<AsyncValue<int>>(
-                provider: futureProvider,
-                overrides: overrides,
-                verify: () => verify(mockRepository.fetchCounter).called(2),
-                tearDown: overrides.clear,
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            if (!completer.isCompleted) completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        try {
+          await providerTest<AsyncValue<int>>(
+            provider: futureProvider,
+            overrides: overrides,
+            verify: () => verify(mockRepository.fetchCounter).called(2),
+            tearDown: overrides.clear,
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
 
       test('shows equality warning when strings are identical', () async {
@@ -134,24 +109,14 @@ void main() {
    Which: at location [0] is <Instance of 'CounterDataSource'> instead of <Instance of 'CounterDataSource'>\n
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testProvider rather than concrete state instances.\n''';
-        late Object actualError;
-        final completer = Completer<void>();
-        await runZonedGuarded(
-          () async {
-            unawaited(
-              providerTest<CounterDataSource>(
-                provider: counterDataSourceProvider,
-                expect: () => <CounterDataSource>[CounterDataSource()],
-              ).then((_) => completer.complete()),
-            );
-            await completer.future;
-          },
-          (Object error, _) {
-            actualError = error;
-            completer.complete();
-          },
-        );
-        expect((actualError as TestFailure).message, expectedError);
+        try {
+          await providerTest<CounterDataSource>(
+            provider: counterDataSourceProvider,
+            expect: () => <CounterDataSource>[CounterDataSource()],
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
       });
     });
 

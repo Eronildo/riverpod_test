@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart'
-    show Override, ProviderBase, ProviderContainer;
+import 'package:riverpod/riverpod.dart' show Override, ProviderBase, ProviderContainer;
 import 'package:riverpod_test/src/async_list_equals.dart';
 import 'package:riverpod_test/src/diff.dart';
+import 'package:riverpod_test/src/run_zoned_wrapper.dart';
 import 'package:test/test.dart' as test;
 
 /// Creates a new `Provider` test case with the given [description].
@@ -135,61 +135,62 @@ Future<void> providerTest<State>({
 }) async {
   final unhandledErrors = <Object>[];
   var shallowEquality = false;
+  
+  try {
+    await runZonedGuardedWrapper(
+      () async {
+        await setUp?.call();
+        final container = ProviderContainer(overrides: overrides);
+        final states = <State>[];
 
-  await runZonedGuarded(
-    () async {
-      await setUp?.call();
-      final container = ProviderContainer(overrides: overrides);
-      final states = <State>[];
-
-      try {
-        container
-          ..read<State>(provider)
-          ..listen<State>(
-            provider,
-            (previous, next) => states.add(next),
-            fireImmediately: true,
-          );
-      } catch (error) {
-        if (errors == null) rethrow;
-        unhandledErrors.add(error);
-      }
-      if (wait != null) await Future<void>.delayed(wait);
-      await Future<void>.delayed(Duration.zero);
-      container.dispose();
-      if (expect != null) {
-        final dynamic expected = expect();
-        shallowEquality = '$states' == '$expected';
         try {
-          final isAsyncListEquals =
-              isAsyncDataListEquals(provider, states, expected);
-          if (isAsyncListEquals) {
-            test.expect(isAsyncListEquals, true);
-          } else {
-            test.expect(states, test.wrapMatcher(expected));
-          }
-        } on test.TestFailure catch (e) {
-          if (shallowEquality || expected is! List<State>) rethrow;
-          final diff = testDiff(expected: expected, actual: states);
-          final message = '${e.message}\n$diff';
-          throw test.TestFailure(message);
+          container
+            ..read<State>(provider)
+            ..listen<State>(
+              provider,
+              (previous, next) => states.add(next),
+              fireImmediately: true,
+            );
+        } catch (error) {
+          if (errors == null) rethrow;
+          unhandledErrors.add(error);
         }
-      }
-      await verify?.call();
-      await tearDown?.call();
-    },
-    (error, stack) {
-      if (shallowEquality && error is test.TestFailure) {
-        throw test.TestFailure(
-          '''${error.message}
+        if (wait != null) await Future<void>.delayed(wait);
+        await Future<void>.delayed(Duration.zero);
+        container.dispose();
+        if (expect != null) {
+          final dynamic expected = expect();
+          shallowEquality = '$states' == '$expected';
+          try {
+            final isAsyncListEquals = isAsyncDataListEquals(provider, states, expected);
+            if (isAsyncListEquals) {
+              test.expect(isAsyncListEquals, true);
+            } else {
+              test.expect(states, test.wrapMatcher(expected));
+            }
+          } on test.TestFailure catch (e) {
+            if (shallowEquality || expected is! List<State>) rethrow;
+            final diff = testDiff(expected: expected, actual: states);
+            final message = '${e.message}\n$diff';
+            throw test.TestFailure(message);
+          }
+        }
+        await verify?.call();
+        await tearDown?.call();
+      },
+    );
+  } catch (error) {
+    if (shallowEquality && error is test.TestFailure) {
+      throw test.TestFailure(
+        '''${error.message}
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testProvider rather than concrete state instances.\n''',
-        );
-      }
-      if (errors == null || !unhandledErrors.contains(error)) {
-        throw error;
-      }
-    },
-  );
+      );
+    }
+    if (errors == null || !unhandledErrors.contains(error)) {
+      throw error;
+    }
+  }
+
   if (errors != null) test.expect(unhandledErrors, test.wrapMatcher(errors()));
 }
