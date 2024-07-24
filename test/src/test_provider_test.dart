@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_test/riverpod_test.dart';
