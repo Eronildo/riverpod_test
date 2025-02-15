@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart' show Override, ProviderBase, ProviderContainer;
+import 'package:riverpod/riverpod.dart'
+    show Override, ProviderBase, ProviderContainer;
 import 'package:riverpod_test/src/async_list_equals.dart';
 import 'package:riverpod_test/src/diff.dart';
 import 'package:riverpod_test/src/run_zoned_wrapper.dart';
@@ -135,7 +136,7 @@ Future<void> providerTest<State>({
 }) async {
   final unhandledErrors = <Object>[];
   var shallowEquality = false;
-  
+
   try {
     await runZonedGuardedWrapper(
       () async {
@@ -162,7 +163,8 @@ Future<void> providerTest<State>({
           final dynamic expected = expect();
           shallowEquality = '$states' == '$expected';
           try {
-            final isAsyncListEquals = isAsyncDataListEquals(provider, states, expected);
+            final isAsyncListEquals =
+                isAsyncDataListEquals(provider, states, expected);
             if (isAsyncListEquals) {
               test.expect(isAsyncListEquals, true);
             } else {

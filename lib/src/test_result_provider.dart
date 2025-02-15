@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart' show Override, ProviderBase, ProviderContainer;
+import 'package:riverpod/riverpod.dart'
+    show Override, ProviderBase, ProviderContainer;
 import 'package:riverpod_test/src/diff.dart';
 import 'package:riverpod_test/src/run_zoned_wrapper.dart';
 import 'package:test/test.dart' as test;

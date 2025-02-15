@@ -222,7 +222,8 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        const expectedError =
+            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
         try {
           await notifierTest<SideEffectCounterNotifier, int>(
             provider: sideEffectCounterNotifierProvider,

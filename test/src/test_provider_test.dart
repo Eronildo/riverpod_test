@@ -59,7 +59,8 @@ void main() {
         'expect [AsyncLoading(), AsyncData(1)]',
         provider: futureProvider,
         overrides: overrides,
-        setUp: () => when(mockRepository.fetchCounter).thenAnswer((_) async => 1),
+        setUp: () =>
+            when(mockRepository.fetchCounter).thenAnswer((_) async => 1),
         expect: () => <AsyncValue<int>>[
           const AsyncLoading(),
           const AsyncData(1),
@@ -71,7 +72,8 @@ void main() {
         'expect [AsyncLoading(), AsyncData([])]',
         provider: futureListProvider,
         overrides: overrides,
-        setUp: () => when(mockRepository.fetchCounterList).thenAnswer((_) async => []),
+        setUp: () =>
+            when(mockRepository.fetchCounterList).thenAnswer((_) async => []),
         expect: () => <AsyncValue<List<int>>>[
           const AsyncLoading(),
           const AsyncData([]),
@@ -90,7 +92,8 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        const expectedError =
+            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
         try {
           await providerTest<AsyncValue<int>>(
             provider: futureProvider,

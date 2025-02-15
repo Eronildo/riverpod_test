@@ -111,7 +111,8 @@ void main() {
         'expect [10] when incrementCounter is called',
         provider: complexRepositoryProvider,
         overrides: overrides,
-        setUp: () => when(mockDataSource.incrementCounter).thenAnswer((_) async => 10),
+        setUp: () =>
+            when(mockDataSource.incrementCounter).thenAnswer((_) async => 10),
         act: (result) => result.incrementCounter(),
         expect: () => [10],
         tearDown: (_) => overrides.clear(),
@@ -134,12 +135,14 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        const expectedError =
+            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
         try {
           await resultProviderTest<ComplexRepository>(
             provider: complexRepositoryProvider,
             overrides: overrides,
-            setUp: () => when(mockDataSource.incrementCounter).thenAnswer((_) async => 10),
+            setUp: () => when(mockDataSource.incrementCounter)
+                .thenAnswer((_) async => 10),
             act: (result) => result.incrementCounter(),
             verify: (_) => verify(mockDataSource.incrementCounter).called(2),
             tearDown: (_) => overrides.clear(),

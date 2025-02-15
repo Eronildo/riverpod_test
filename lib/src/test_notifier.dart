@@ -5,7 +5,8 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart' show Override, ProviderContainer;
 // ignore: implementation_imports
-import 'package:riverpod/src/internals.dart' show NotifierBase, NotifierProviderBase;
+import 'package:riverpod/src/internals.dart'
+    show NotifierBase, NotifierProviderBase;
 import 'package:riverpod_test/src/diff.dart';
 import 'package:riverpod_test/src/run_zoned_wrapper.dart';
 import 'package:test/test.dart' as test;

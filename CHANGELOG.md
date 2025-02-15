@@ -1,3 +1,7 @@
+## 0.1.8
+
+* Fixed static analysis.
+
 ## 0.1.7
 
 * Upgraded packages versions and fixed static analysis.
