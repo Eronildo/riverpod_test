@@ -1,3 +1,7 @@
+## 0.1.7
+
+* Upgraded packages versions and fixed static analysis.
+
 ## 0.1.6
 
 * Fix Waiting for test indefinitely if it fails
