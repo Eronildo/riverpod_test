@@ -52,6 +52,14 @@ void mainNotifier() {
       act: (notifier) => notifier.increment(),
       expect: () => [const AsyncData(2)],
     );
+
+    testAsyncNotifier<CounterStreamNotifier, int>(
+      'expect [AsyncData(2)] when increment is called with seed: AsyncData(1)',
+      provider: counterStreamNotifierProvider,
+      seed: const AsyncData(1),
+      act: (notifier) => notifier.increment(),
+      expect: () => [const AsyncData(2)],
+    );
   });
 }
 
@@ -86,6 +94,9 @@ final counterNotifierProvider =
 final counterAsyncNotifierProvider =
     AsyncNotifierProvider<CounterAsyncNotifier, int>(CounterAsyncNotifier.new);
 
+final counterStreamNotifierProvider =
+    StreamNotifierProvider<CounterStreamNotifier, int>(CounterStreamNotifier.new);
+
 final repositoryProvider = Provider<Repository>((ref) => Repository());
 
 final counterStateNotifierProvider =
@@ -103,6 +114,15 @@ class CounterNotifier extends Notifier<int> {
 class CounterAsyncNotifier extends AsyncNotifier<int> {
   @override
   FutureOr<int> build() => 0;
+
+  void increment() => state = AsyncData(state.value! + 1);
+}
+
+class CounterStreamNotifier extends StreamNotifier<int> {
+  @override
+  Stream<int> build() async* {
+    yield 0;
+  }
 
   void increment() => state = AsyncData(state.value! + 1);
 }
