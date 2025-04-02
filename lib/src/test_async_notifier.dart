@@ -13,7 +13,7 @@ import 'package:riverpod_test/src/diff.dart';
 import 'package:riverpod_test/src/run_zoned_wrapper.dart';
 import 'package:test/test.dart' as test;
 
-/// Creates a new `AsyncNotifier` test case with the given [description].
+/// Creates a new `AsyncNotifier` (or `StreamNotifier`) test case with the given [description].
 /// [testAsyncNotifier] will handle asserting that the `notifier` emits the
 /// [expect]ed states (in order) after [act] is executed.
 /// [testAsyncNotifier] also handles ensuring that no additional states are
