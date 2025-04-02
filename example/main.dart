@@ -45,7 +45,7 @@ void mainNotifier() {
       expect: () => const <int>[1],
     );
 
-    testAsyncNotifier(
+    testAsyncNotifier<CounterAsyncNotifier, int>(
       'expect [AsyncData(2)] when increment is called with seed: AsyncData(1)',
       provider: counterAsyncNotifierProvider,
       seed: const AsyncData(1),

@@ -4,10 +4,10 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart'
-    show AsyncValue, Override, ProviderContainer;
+    show AsyncValue, Override, ProviderBase, ProviderContainer;
 // ignore: implementation_imports
 import 'package:riverpod/src/async_notifier.dart'
-    show AsyncNotifierBase, AsyncNotifierProviderBase;
+    show AsyncNotifierBase, AsyncNotifierProviderBase, StreamNotifierProviderBase;
 import 'package:riverpod_test/src/async_list_equals.dart';
 import 'package:riverpod_test/src/diff.dart';
 import 'package:riverpod_test/src/run_zoned_wrapper.dart';
@@ -149,7 +149,7 @@ import 'package:test/test.dart' as test;
 @isTest
 void testAsyncNotifier<C extends AsyncNotifierBase<State>, State>(
   String description, {
-  required AsyncNotifierProviderBase<C, State> provider,
+  required ProviderBase<AsyncValue<State>> provider,
   FutureOr<void> Function()? setUp,
   List<Override> overrides = const [],
   dynamic Function()? expect,
@@ -184,7 +184,7 @@ void testAsyncNotifier<C extends AsyncNotifierBase<State>, State>(
 /// This should never be used directly - please use [testAsyncNotifier] instead.
 @visibleForTesting
 Future<void> asyncNotifierTest<C extends AsyncNotifierBase<State>, State>({
-  required AsyncNotifierProviderBase<C, State> provider,
+  required ProviderBase<AsyncValue<State>> provider,
   FutureOr<void> Function()? setUp,
   List<Override> overrides = const [],
   dynamic Function()? expect,
@@ -211,7 +211,14 @@ Future<void> asyncNotifierTest<C extends AsyncNotifierBase<State>, State>({
           (previous, next) => states.add(next),
           fireImmediately: true,
         );
-        final notifier = container.read(provider.notifier);
+        final C notifier;
+        if (provider is AsyncNotifierProviderBase<C, State>) {
+          notifier = container.read(provider.notifier);
+        } else if (provider is StreamNotifierProviderBase<C, State>) {
+          notifier = container.read(provider.notifier);
+        } else {
+          throw ArgumentError('Provider must be AsyncNotifierProvider or StreamNotifierProvider');
+        }
         // ignore: invalid_use_of_protected_member
         await notifier.future;
         // clear the states emitted by the build
