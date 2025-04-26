@@ -1,3 +1,7 @@
+## 0.1.9
+
+* Possibility to test StreamNotifier and FamilyStreamNotifier with testAsyncNotifier. (A big thanks to KyleFin)
+
 ## 0.1.8
 
 * Fixed static analysis.

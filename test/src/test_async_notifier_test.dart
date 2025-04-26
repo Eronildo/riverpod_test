@@ -101,7 +101,8 @@ void main() {
       );
 
       test('fails immediately when expectation is incorrect', () async {
-        const expectedError = 'Expected: [AsyncData<int>:AsyncData<int>(value: 2)]\n'
+        const expectedError =
+            'Expected: [AsyncData<int>:AsyncData<int>(value: 2)]\n'
             '  Actual: [AsyncData<int>:AsyncData<int>(value: 1)]\n'
             '   Which: at location [0] is '
             'AsyncData<int>:<AsyncData<int>(value: 1)> instead of '
@@ -147,6 +148,152 @@ void main() {
         try {
           await asyncNotifierTest<ErrorCountAsyncNotifier, int>(
             provider: errorCountAsyncNotifierProvider,
+            act: (_) => throw exception,
+            expect: () => [const AsyncData<int>(1)],
+          );
+        } catch (e) {
+          expect(e, equals(exception));
+        }
+      });
+    });
+
+    group('CounterStreamNotifier', () {
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'supports matchers (contains)',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) => notifier.increment(),
+        expect: () => contains(const AsyncData(1)),
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'supports matchers (containsAll)',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) => notifier
+          ..increment()
+          ..increment(),
+        expect: () => containsAll(
+          <AsyncValue<int>>[
+            const AsyncData(1),
+            const AsyncData(2),
+          ],
+        ),
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'supports matchers (containsAllInOrder)',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) => notifier
+          ..increment()
+          ..increment(),
+        expect: () => containsAllInOrder(
+          <AsyncValue<int>>[
+            const AsyncData(1),
+            const AsyncData(2),
+          ],
+        ),
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'expect [] when nothing is called',
+        provider: counterStreamNotifierProvider(0),
+        expect: () => const <AsyncValue<int>>[],
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'expect [AsyncData(1)] when call increment',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) => notifier.increment(),
+        expect: () => <AsyncValue<int>>[const AsyncData(1)],
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'expect [AsyncData(1)] when call increment with async act',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) async {
+          await Future<void>.delayed(const Duration(seconds: 1));
+          notifier.increment();
+        },
+        expect: () => <AsyncValue<int>>[const AsyncData(1)],
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'expect [AsyncData(1), AsyncData(2)] when call increment multiple times'
+        ' with async act',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) async {
+          notifier.increment();
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          notifier.increment();
+        },
+        expect: () => <AsyncValue<int>>[const AsyncData(1), const AsyncData(2)],
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'expect [AsyncData(2)] when call increment twice and skip: 1',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) => notifier
+          ..increment()
+          ..increment(),
+        skip: 1,
+        expect: () => <AsyncValue<int>>[const AsyncData(2)],
+      );
+
+      testAsyncNotifier<CounterStreamNotifier, int>(
+        'expect [AsyncData(11)] when call increment and seed: AsyncData(10)',
+        provider: counterStreamNotifierProvider(0),
+        act: (notifier) => notifier.increment(),
+        seed: const AsyncData(10),
+        expect: () => contains(const AsyncData(11)),
+      );
+
+      test('fails immediately when expectation is incorrect', () async {
+        const expectedError =
+            'Expected: [AsyncData<int>:AsyncData<int>(value: 2)]\n'
+            '  Actual: [AsyncData<int>:AsyncData<int>(value: 1)]\n'
+            '   Which: at location [0] is '
+            'AsyncData<int>:<AsyncData<int>(value: 1)> instead of '
+            'AsyncData<int>:<AsyncData<int>(value: 2)>\n'
+            '\n'
+            '==== diff ========================================\n'
+            '\n'
+            '\x1B[90m[AsyncData<int>(value: '
+            '\x1B[0m\x1B[31m[-2-]\x1B[0m\x1B[32m{+1+}\x1B[0m\x1B[90m)]\x1B[0m\n'
+            '\n'
+            '==== end diff ====================================\n';
+        try {
+          await asyncNotifierTest<CounterStreamNotifier, int>(
+            provider: counterStreamNotifierProvider(0),
+            act: (notifier) => notifier.increment(),
+            expect: () => <AsyncValue<int>>[const AsyncData<int>(2)],
+            errors: Exception.new,
+          );
+        } catch (e) {
+          expect((e as TestFailure).message, expectedError);
+        }
+      });
+
+      test(
+        'fails immediately when '
+        'uncaught exception occurs within notifier',
+        () async {
+          try {
+            await asyncNotifierTest<ErrorCountStreamNotifier, int>(
+              provider: errorCountStreamNotifierProvider,
+              act: (notifier) => notifier.increment(),
+              expect: () => <AsyncValue<int>>[const AsyncData<int>(1)],
+            );
+          } catch (e) {
+            expect(e, isA<ErrorCounterStreamNotifierError>());
+          }
+        },
+      );
+
+      test('fails immediately when exception occurs in act', () async {
+        final exception = Exception('oops');
+
+        try {
+          await asyncNotifierTest<ErrorCountStreamNotifier, int>(
+            provider: errorCountStreamNotifierProvider,
             act: (_) => throw exception,
             expect: () => [const AsyncData<int>(1)],
           );
@@ -347,7 +494,8 @@ void main() {
       );
 
       test('fails immediately when verify is incorrect', () async {
-        const expectedError = '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
+        const expectedError =
+            '''Expected: <2>\n  Actual: <1>\nUnexpected number of calls\n''';
         try {
           await asyncNotifierTest<SideEffectAsyncNotifier, int>(
             provider: sideEffectAsyncNotifierProvider(1),
@@ -399,6 +547,19 @@ Alternatively, consider using Matchers in the expect of the testAsyncNotifier ra
     testAsyncNotifier<CounterAsyncNotifier, int>(
       'is called after the test is run',
       provider: counterAsyncNotifierProvider(0),
+      act: (notifier) => notifier.increment(),
+      expect: () => contains(const AsyncData(1)),
+      // ignore: invalid_use_of_protected_member
+      verify: (notifier) => state = notifier.state,
+      tearDown: () {
+        tearDownCallCount++;
+        expect(state, equals(const AsyncData(1)));
+      },
+    );
+
+    testAsyncNotifier<CounterStreamNotifier, int>(
+      'is called after the test is run (StreamNotifier)',
+      provider: counterStreamNotifierProvider(0),
       act: (notifier) => notifier.increment(),
       expect: () => contains(const AsyncData(1)),
       // ignore: invalid_use_of_protected_member

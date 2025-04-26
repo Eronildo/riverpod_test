@@ -95,7 +95,8 @@ final counterAsyncNotifierProvider =
     AsyncNotifierProvider<CounterAsyncNotifier, int>(CounterAsyncNotifier.new);
 
 final counterStreamNotifierProvider =
-    StreamNotifierProvider<CounterStreamNotifier, int>(CounterStreamNotifier.new);
+    StreamNotifierProvider<CounterStreamNotifier, int>(
+        CounterStreamNotifier.new);
 
 final repositoryProvider = Provider<Repository>((ref) => Repository());
 

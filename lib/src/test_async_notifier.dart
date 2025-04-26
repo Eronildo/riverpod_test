@@ -7,7 +7,10 @@ import 'package:riverpod/riverpod.dart'
     show AsyncValue, Override, ProviderBase, ProviderContainer;
 // ignore: implementation_imports
 import 'package:riverpod/src/async_notifier.dart'
-    show AsyncNotifierBase, AsyncNotifierProviderBase, StreamNotifierProviderBase;
+    show
+        AsyncNotifierBase,
+        AsyncNotifierProviderBase,
+        StreamNotifierProviderBase;
 import 'package:riverpod_test/src/async_list_equals.dart';
 import 'package:riverpod_test/src/diff.dart';
 import 'package:riverpod_test/src/run_zoned_wrapper.dart';
@@ -217,7 +220,8 @@ Future<void> asyncNotifierTest<C extends AsyncNotifierBase<State>, State>({
         } else if (provider is StreamNotifierProviderBase<C, State>) {
           notifier = container.read(provider.notifier);
         } else {
-          throw ArgumentError('Provider must be AsyncNotifierProvider or StreamNotifierProvider');
+          throw ArgumentError(
+              'Provider must be AsyncNotifierProvider or StreamNotifierProvider');
         }
         // ignore: invalid_use_of_protected_member
         await notifier.future;

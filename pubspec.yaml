@@ -1,6 +1,6 @@
 name: riverpod_test
 description: A testing library which makes it easy to test providers. Built to be used with the riverpod package.
-version: 0.1.8
+version: 0.1.9
 repository: https://github.com/Eronildo/riverpod_test
 homepage: https://github.com/Eronildo/riverpod_test
 topics: [test, tests, providers, riverpod, riverpod-test]

@@ -6,6 +6,10 @@ extension AsyncNotifierIntValueExtension on AsyncNotifier<int> {
   int get value => state.hasValue ? state.value! : 0;
 }
 
+extension StreamNotifierIntValueExtension on StreamNotifier<int> {
+  int get value => state.hasValue ? state.value! : 0;
+}
+
 extension AutoDisposeAsyncNotifierIntValueExtension
     on AutoDisposeAsyncNotifier<int> {
   int get value => state.hasValue ? state.value! : 0;
@@ -13,6 +17,11 @@ extension AutoDisposeAsyncNotifierIntValueExtension
 
 extension FamilyAsyncNotifierIntValueExtension
     on FamilyAsyncNotifier<int, int> {
+  int get value => state.hasValue ? state.value! : 0;
+}
+
+extension FamilyStreamNotifierIntValueExtension
+    on FamilyStreamNotifier<int, int> {
   int get value => state.hasValue ? state.value! : 0;
 }
 
