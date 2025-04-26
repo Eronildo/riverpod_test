@@ -68,7 +68,7 @@ class CounterNotifier extends Notifier<int> {
 
 ```
 
-`testAsyncNotifier`
+`testAsyncNotifier` (also handles `StreamNotifier`)
 
 ```dart
 testAsyncNotifier<CounterAsyncNotifier, int>(
