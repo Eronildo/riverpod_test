@@ -181,16 +181,16 @@ Future<void> providerTest<State>({
         await tearDown?.call();
       },
     );
-  } catch (error) {
+  } catch (error, stackTrace) {
     if (shallowEquality && error is test.TestFailure) {
-      throw test.TestFailure(
+      Error.throwWithStackTrace(test.TestFailure(
         '''${error.message}
 WARNING: Please ensure state instances extend Equatable, override == and hashCode, or implement Comparable.
 Alternatively, consider using Matchers in the expect of the testProvider rather than concrete state instances.\n''',
-      );
+      ), stackTrace);
     }
     if (errors == null || !unhandledErrors.contains(error)) {
-      throw error;
+      rethrow;
     }
   }
 
